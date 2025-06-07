@@ -4,7 +4,8 @@ from maze import Maze
 def main():
     win = Window(800, 600)
 
-    maze = Maze(50, 50, 20, 28, 25, 25, 0.01, win)
+    maze = Maze(50, 50, 20, 28, 25, 25, seed=42, animation_delay=0.01, window=win)
+    # maze = Maze(50, 50, 10, 14, 50, 50, seed=42, animation_delay=0.01, window=win)
 
     win.wait_for_close()
 
