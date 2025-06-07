@@ -19,6 +19,7 @@ class Maze():
         self.__create_cells()
         self.__break_entrance_and_exit()
         self.__break_walls_r(0, 0)
+        self.__reset_cells_visited()
 
     def __create_cells(self):
         for x in range(self.num_cols):
@@ -55,6 +56,51 @@ class Maze():
                         self.__cells[ni][nj].has_right_wall = False
                     self.__break_walls_r(ni, nj)
         self.__draw_cell(i, j)
+        
+    def __reset_cells_visited(self):
+        for i in range(self.num_cols):
+            for j in range(self.num_rows):
+                self.__cells[i][j].visited = False
+                
+    def solve(self):
+        return self.__solve_r(0, 0)
+        
+    def __solve_r(self, i, j):
+        self.__animate()
+        self.__cells[i][j].visited = True
+        if i == self.num_cols - 1 and j == self.num_rows - 1:
+            return True
+        directions = [(1, 0), (0, 1), (0, -1), (-1, 0)]
+        # random.shuffle(directions)
+        for di, dj in directions:
+            ni, nj = i + di, j + dj
+            if 0 <= ni < self.num_cols and 0 <= nj < self.num_rows:
+                if not self.__cells[ni][nj].visited:
+                    if di == 0 and dj == -1 and not self.__cells[i][j].has_top_wall:
+                        self.__cells[i][j].draw_move(self.__cells[ni][nj])
+                        if self.__solve_r(ni, nj):
+                            return True
+                        else:
+                            self.__cells[i][j].draw_move(self.__cells[ni][nj], undo=True)
+                    elif di == 1 and dj == 0 and not self.__cells[i][j].has_right_wall:
+                        self.__cells[i][j].draw_move(self.__cells[ni][nj])
+                        if self.__solve_r(ni, nj):
+                            return True
+                        else:
+                            self.__cells[i][j].draw_move(self.__cells[ni][nj], undo=True)
+                    elif di == 0 and dj == 1 and not self.__cells[i][j].has_bottom_wall:
+                        self.__cells[i][j].draw_move(self.__cells[ni][nj])
+                        if self.__solve_r(ni, nj):
+                            return True
+                        else:
+                            self.__cells[i][j].draw_move(self.__cells[ni][nj], undo=True)
+                    elif di == -1 and dj == 0 and not self.__cells[i][j].has_left_wall:
+                        self.__cells[i][j].draw_move(self.__cells[ni][nj])
+                        if self.__solve_r(ni, nj):
+                            return True
+                        else:
+                            self.__cells[i][j].draw_move(self.__cells[ni][nj], undo=True)
+        return False
     
     def __draw_cell(self, i, j):
         x1 = self.__x1 + i * self.__cell_size_x
